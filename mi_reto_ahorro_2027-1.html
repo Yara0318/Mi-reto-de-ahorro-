@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#8f5d91">
+<title>Mi Reto de Ahorro 2027</title>
+<style>
+:root{--plum:#8f5d91;--pink:#f8e8f3;--lav:#eee7fb;--ink:#392d3c;--muted:#786d7c;--white:#fff;--green:#38795c}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#fff7fc,#f5f0ff);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);padding:18px 12px 34px}
+.app{max-width:520px;margin:auto}.hero{background:linear-gradient(135deg,#9d6ca1,#c28cb7);color:#fff;border-radius:26px;padding:24px 20px;text-align:center;box-shadow:0 10px 28px #8f5d9125}
+.hero .spark{font-size:28px}.hero h1{font-size:25px;margin:7px 0 5px}.hero p{margin:0;opacity:.95;font-size:14px}
+.panel{background:#fff;border:1px solid #eee3ef;border-radius:20px;padding:17px;margin-top:14px;box-shadow:0 5px 18px #5d38650b}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:750}
+.big{font-size:35px;line-height:1.2;font-weight:850;color:var(--plum);margin:7px 0}
+.progress{height:10px;background:#f0e8f2;border-radius:99px;overflow:hidden;margin:12px 0 7px}.bar{height:100%;width:0;background:linear-gradient(90deg,#a979b1,#e5a6c9);border-radius:99px;transition:width .2s}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#fbf7fc;border-radius:14px;padding:12px}.stat strong{display:block;font-size:20px;color:var(--plum);margin-top:3px}
+h2{font-size:17px;margin:0 0 12px}.choices{display:grid;grid-template-columns:1fr;gap:8px}.choice{border:1px solid #e8dce9;background:#fff;border-radius:13px;padding:11px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;text-align:left;color:var(--ink)}.choice.active{border:2px solid var(--plum);background:#fcf5fc}.choice input{accent-color:var(--plum);width:17px;height:17px}
+.note{font-size:12px;color:var(--muted);line-height:1.45;margin:10px 0 0}
+.list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.item{border:1px solid #eee4ef;border-radius:13px;padding:10px;background:#fff;display:flex;align-items:center;gap:8px;min-width:0}.item.done{background:#f0faf4;border-color:#b9dfc8}.item input{width:19px;height:19px;accent-color:var(--green);flex-shrink:0}.item .q{font-size:12px;color:var(--muted)}.item .amount{font-size:16px;font-weight:800}.item.done .amount{color:var(--green)}
+button{border:0;border-radius:12px;padding:12px 14px;font:inherit;font-weight:750;cursor:pointer}.primary{background:var(--plum);color:#fff;width:100%;margin-top:12px}.secondary{background:var(--pink);color:var(--plum);width:100%;margin-top:8px}.foot{text-align:center;color:var(--muted);font-size:12px;margin:18px 8px 0}.pill{display:inline-block;background:#f5e6f4;color:#805183;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:750}
+@media(min-width:440px){.choices{grid-template-columns:1fr}.list{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="spark">🐷 ✨ 💗</div>
+    <h1>Mi Reto de Ahorro 2027</h1>
+    <p>Poquito a poquito, ¡mi dinero va creciendo!</p>
+  </header>
+
+  <section class="panel">
+    <div class="label">Mi ahorro acumulado</div>
+    <div class="big" id="saved">$0</div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)"><span id="count">0 de 24 quincenas</span><span id="percent">0%</span></div>
+    <div class="stats" style="margin-top:14px">
+      <div class="stat"><span class="label">Mi meta</span><strong id="goal">$4,800</strong></div>
+      <div class="stat"><span class="label">Me falta</span><strong id="left">$4,800</strong></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>🌷 Elige tu reto</h2>
+    <div class="choices">
+      <label class="choice active" data-mode="suave"><input type="radio" name="mode" value="suave" checked><span><b>Suave</b><br><small>Montos manejables · meta de $5,300</small></span></label>
+      <label class="choice" data-mode="medio"><input type="radio" name="mode" value="medio"><span><b>Medio</b><br><small>Un poco más de desafío · meta de $7,900</small></span></label>
+      <label class="choice" data-mode="alto"><input type="radio" name="mode" value="alto"><span><b>Desafiante</b><br><small>Para juntar más · meta de $10,350</small></span></label>
+    </div>
+    <p class="note">Marca cada quincena cuando guardes el dinero. Tu progreso se conserva en este navegador de este teléfono.</p>
+  </section>
+
+  <section class="panel">
+    <h2>✅ Mis 24 quincenas</h2>
+    <div class="list" id="list"></div>
+    <button class="secondary" id="reset">Reiniciar mi reto</button>
+  </section>
+  <p class="foot">Un paso a la vez 💕 · Si una quincena no puedes, sigue con la siguiente.</p>
+</div>
+<script>
+const plans = {
+ suave:[100,150,200,250,300,150,200,250,100,300,200,250,150,300,200,250,100,300,200,250,150,300,200,250],
+ medio:[100,200,150,300,250,350,150,300,200,350,250,400,200,300,250,350,150,400,200,350,250,400,300,450],
+ alto:[200,300,250,400,350,500,250,450,300,500,350,550,300,450,400,600,250,500,350,550,400,600,450,650]
+};
+const labels=["Enero · 1.ª","Enero · 2.ª","Febrero · 1.ª","Febrero · 2.ª","Marzo · 1.ª","Marzo · 2.ª","Abril · 1.ª","Abril · 2.ª","Mayo · 1.ª","Mayo · 2.ª","Junio · 1.ª","Junio · 2.ª","Julio · 1.ª","Julio · 2.ª","Agosto · 1.ª","Agosto · 2.ª","Septiembre · 1.ª","Septiembre · 2.ª","Octubre · 1.ª","Octubre · 2.ª","Noviembre · 1.ª","Noviembre · 2.ª","Diciembre · 1.ª","Diciembre · 2.ª"];
+const money=n=>n.toLocaleString("es-MX",{style:"currency",currency:"MXN",maximumFractionDigits:0});
+let state={mode:"suave",done:[]};
+try{const s=JSON.parse(localStorage.getItem("retoAhorro2027")||"null");if(s&&plans[s.mode]&&Array.isArray(s.done))state=s;}catch(e){}
+function total(){return plans[state.mode].reduce((a,b)=>a+b,0)}
+function save(){try{localStorage.setItem("retoAhorro2027",JSON.stringify(state))}catch(e){}}
+function render(){
+ document.querySelectorAll(".choice").forEach(el=>{const active=el.dataset.mode===state.mode;el.classList.toggle("active",active);el.querySelector("input").checked=active});
+ const list=document.getElementById("list");list.innerHTML="";
+ plans[state.mode].forEach((amt,i)=>{
+  const label=document.createElement("label");label.className="item"+(state.done.includes(i)?" done":"");
+  const cb=document.createElement("input");cb.type="checkbox";cb.checked=state.done.includes(i);cb.setAttribute("aria-label","Marcar "+labels[i]);
+  cb.addEventListener("change",()=>{state.done=cb.checked?[...new Set([...state.done,i])]:state.done.filter(n=>n!==i);save();render()});
+  const info=document.createElement("span");info.innerHTML='<span class="q">'+labels[i]+'</span><br><span class="amount">'+money(amt)+'</span>';
+  label.append(cb,info);list.append(label);
+ });
+ const saved=state.done.reduce((sum,i)=>sum+plans[state.mode][i],0),goal=total(),pct=Math.round(saved/goal*100);
+ document.getElementById("saved").textContent=money(saved);document.getElementById("goal").textContent=money(goal);document.getElementById("left").textContent=money(Math.max(0,goal-saved));document.getElementById("count").textContent=state.done.length+" de 24 quincenas";document.getElementById("percent").textContent=pct+"%";document.getElementById("bar").style.width=pct+"%";
+}
+document.querySelectorAll(".choice").forEach(el=>el.addEventListener("click",()=>{if(state.mode!==el.dataset.mode){state.mode=el.dataset.mode;state.done=[];save();render()}}));
+document.getElementById("reset").addEventListener("click",()=>{if(confirm("¿Quieres borrar las quincenas marcadas y empezar de nuevo?")){state.done=[];save();render()}});
+render();
+</script>
+</body>
+</html>
